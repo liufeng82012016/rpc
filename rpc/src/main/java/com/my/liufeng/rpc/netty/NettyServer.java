@@ -1,27 +1,27 @@
-package com.my.liufeng.rpc.start;
+package com.my.liufeng.rpc.netty;
 
-import com.my.liufeng.rpc.handler.SimpleServerHandler;
+import com.my.liufeng.rpc.netty.codec.CustomDecoder;
+import com.my.liufeng.rpc.netty.codec.CustomEncoder;
+import com.my.liufeng.rpc.netty.handler.SimpleServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
 
 /**
  * @Author liufeng
  * @Description: 管理服务器长链接
  * @since 2021/5/27 19:49
  */
-public class NetServer {
+public class NettyServer {
 
     private int workers;
     private int bosses;
     private int port;
 
-    public NetServer(int port) {
+    public NettyServer(int port) {
         this.port = port;
         try {
             init();
@@ -47,8 +47,8 @@ public class NetServer {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             // todo
-                            ch.pipeline().addLast(new StringEncoder());
-                            ch.pipeline().addLast(new StringDecoder());
+                            ch.pipeline().addLast(new CustomDecoder());
+                            ch.pipeline().addLast(new CustomEncoder());
                             ch.pipeline().addLast(new SimpleServerHandler());
                         }
                     });

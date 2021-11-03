@@ -1,7 +1,7 @@
 package com.my.liufeng.rpc.context;
 
-import com.my.liufeng.rpc.scan.ClassScanner;
-import com.my.liufeng.rpc.scan.RpcServiceSelector;
+import com.my.liufeng.rpc.utils.ClassScanner;
+import com.my.liufeng.rpc.annotation.selector.RpcServiceSelector;
 import com.my.liufeng.rpc.utils.CollectionUtil;
 
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * provider service注册中心
  */
-public class ServiceRegistry {
+public class ProviderRepository {
 
     private static Map<Class<?>, Object> singletonInstanceMap = null;
 

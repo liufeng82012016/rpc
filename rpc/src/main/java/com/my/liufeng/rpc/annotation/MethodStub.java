@@ -25,4 +25,9 @@ public @interface MethodStub {
      * 可用服务列表，serverName/serverAddresses 取一个，前者取注册中心，后者写死
      */
     String[] serverAddresses() default {};
+
+    /**
+     * 接口调用超时时间
+     */
+    int timeout() default 1000;
 }

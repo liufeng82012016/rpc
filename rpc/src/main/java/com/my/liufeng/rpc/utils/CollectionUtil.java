@@ -17,7 +17,10 @@ public class CollectionUtil {
         return args == null || args.length == 0;
     }
 
-    public static boolean isEmpty(Collection collection) {
+    /**
+     * 判断集合是否为空
+     */
+    public static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
 }

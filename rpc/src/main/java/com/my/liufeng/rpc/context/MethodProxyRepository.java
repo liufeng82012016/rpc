@@ -1,8 +1,8 @@
 package com.my.liufeng.rpc.context;
 
 import com.my.liufeng.rpc.annotation.MethodStub;
-import com.my.liufeng.rpc.scan.ClassScanner;
-import com.my.liufeng.rpc.scan.MethodStubSelector;
+import com.my.liufeng.rpc.utils.ClassScanner;
+import com.my.liufeng.rpc.annotation.selector.MethodStubSelector;
 import com.my.liufeng.rpc.model.RpcRequest;
 
 import java.lang.reflect.InvocationHandler;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * 方法注册中心 -- 动态代理远程调用方法
  */
-public class MethodRegistry {
+public class MethodProxyRepository {
 
     private static Map<Class<?>, Object> proxyInstanceMap = null;
 
@@ -46,7 +46,7 @@ public class MethodRegistry {
                     rpcRequest.setParams(args);
                     rpcRequest.setServiceClass(methodStub.className());
                     System.out.println(String.format("%s %s invoke", clazz.getName(), method.getName()));
-                    return ClientSocketContainer.sendMsg(rpcRequest, methodStub, method.getReturnType());
+                    return SocketContainer.sendMsg(rpcRequest, methodStub);
                 }
             });
             proxyInstanceMap.put(clazz, proxy);
@@ -55,8 +55,9 @@ public class MethodRegistry {
 
     /**
      * 获取代理实例
+     * 目前只能手动调用；如果是Spring的容器，注入对应接口即可
      */
-    public static <T> T get(Class<T> clazz) {
+    public static <T> T getProxy(Class<T> clazz) {
         if (proxyInstanceMap == null) {
             throw new RuntimeException(clazz.getSimpleName() + " not init.");
         }

@@ -1,11 +1,13 @@
 package com.my.liufeng.rpc.model;
 
+import com.my.liufeng.rpc.enums.RpcMessageType;
+
 /**
  * @Author liufeng
  * @Description: rpc响应
  * @since 2021/5/27 19:33
  */
-public class RpcResponse<T> implements Response {
+public class RpcResponse<T> extends RpcMessage implements Response {
     /**
      * 请求id
      */
@@ -16,6 +18,19 @@ public class RpcResponse<T> implements Response {
     private T data;
     private Integer code;
     private String msg;
+
+    public RpcResponse() {
+        this.code = 0;
+        this.type = RpcMessageType.TYPE_RESPONSE.getType();
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
+    }
 
     public String getRequestId() {
         return requestId;

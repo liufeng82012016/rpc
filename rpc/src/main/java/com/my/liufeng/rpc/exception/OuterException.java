@@ -1,22 +1,31 @@
 package com.my.liufeng.rpc.exception;
 
-public class DispatcherException extends RuntimeException {
+import com.my.liufeng.rpc.enums.ResultCode;
+
+public class OuterException extends RuntimeException {
+
     private String msg;
     private Integer code;
 
-    public DispatcherException() {
+    public OuterException() {
     }
 
-    public DispatcherException(Integer code) {
+    public OuterException(Integer code) {
         this.code = code;
     }
 
-    public DispatcherException(String msg) {
+    public OuterException(String msg) {
         super(msg);
         this.msg = msg;
     }
 
-    public DispatcherException(Integer code, String msg) {
+    public OuterException(ResultCode resultCode) {
+        super(resultCode.getMsg());
+        this.code = resultCode.getCode();
+        this.msg = resultCode.getMsg();
+    }
+
+    public OuterException(Integer code, String msg) {
         super(msg);
         this.code = code;
         this.msg = msg;

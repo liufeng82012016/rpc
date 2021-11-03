@@ -1,4 +1,4 @@
-package com.my.liufeng.rpc.scan;
+package com.my.liufeng.rpc.annotation.selector;
 
 public interface ClassSelector {
     /**

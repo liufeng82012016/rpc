@@ -13,6 +13,7 @@ public class IpUtil {
 
     /**
      * 将地址拆分为数组 127.0.0.1:80 ---> ["127.0.0.1","80"]
+     * todo 使用url解析
      */
     public static String[] splitAddress(String addr) {
         Objects.requireNonNull(addr);

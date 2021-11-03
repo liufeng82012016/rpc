@@ -15,4 +15,8 @@ public class HelloService {
     public Long copy(Long max) {
         return max;
     }
+
+    public MockResp obj(){
+        return new MockResp();
+    }
 }

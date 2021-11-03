@@ -1,4 +1,4 @@
-package com.my.liufeng.rpc.scan;
+package com.my.liufeng.rpc.annotation.selector;
 
 import com.my.liufeng.rpc.annotation.MethodStub;
 import com.my.liufeng.rpc.utils.CollectionUtil;

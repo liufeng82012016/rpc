@@ -1,11 +1,14 @@
 package com.my.liufeng.rpc.model;
 
+import com.my.liufeng.rpc.enums.RpcMessageType;
+
 /**
  * @Author liufeng
  * @Description: rpc请求
  * @since 2021/5/27 19:33
  */
-public class RpcRequest implements Request {
+public class RpcRequest extends RpcMessage implements Request {
+
     /**
      * 请求id
      */
@@ -30,6 +33,19 @@ public class RpcRequest implements Request {
      * 实参
      */
     private Object[] params;
+
+    public RpcRequest() {
+        type = RpcMessageType.TYPE_REQUEST.getType();
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
+    }
+
 
     public String getRequestId() {
         return requestId;
@@ -79,4 +95,6 @@ public class RpcRequest implements Request {
     public void setProviderName(String providerName) {
         this.providerName = providerName;
     }
+
+
 }

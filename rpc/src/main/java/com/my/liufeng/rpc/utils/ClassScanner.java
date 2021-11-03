@@ -1,6 +1,6 @@
-package com.my.liufeng.rpc.scan;
+package com.my.liufeng.rpc.utils;
 
-import com.my.liufeng.rpc.utils.CollectionUtil;
+import com.my.liufeng.rpc.annotation.selector.ClassSelector;
 
 import java.io.File;
 import java.net.JarURLConnection;
