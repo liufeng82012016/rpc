@@ -12,11 +12,11 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * 编码器，负责序列化请求
  * todo MessageToByteEncoder 加了泛型会报错 netty不支持byte[]，只支持ByteBuf或FileRegion，编码器增加ByteArrayEncoder可以解决
  * -----------------------------------------------------------
- * | length | type | magic_number |           body           |
+ * | length | type | separator |           body           |
  * -----------------------------------------------------------
- * | int    | byte |    byte[]    |           byte[]         |
+ * | int    | byte |  byte[]   |           byte[]         |
  * -----------------------------------------------------------
- * | 4byte  | 1byte |    16byte   |           byte[]         |
+ * | 4byte  | 1byte |  nbyte  |           byte[]         |
  * -----------------------------------------------------------
  */
 public class CustomEncoder extends MessageToByteEncoder {
@@ -35,10 +35,11 @@ public class CustomEncoder extends MessageToByteEncoder {
             throw new InnerException("RpcMessage maxBodyLength is " + RpcConstants.MAX_LENGTH);
         }
         // 按照既定顺序写入数据
+        out.writeBytes(RpcConstants.SEPARATOR);
         out.writeInt(length);
-        out.writeBytes(RpcConstants.MAGIC_NUMBER);
         out.writeByte(type);
         out.writeBytes(msgBytes);
+        out.writeBytes(RpcConstants.SEPARATOR);
     }
 
 

@@ -14,7 +14,6 @@ public class StartClient {
             packages = new String[]{StartClient.class.getPackage().getName()};
         }
         MethodProxyRepository.scan(packages);
-        System.out.println(MethodProxyRepository.getInstances());
     }
 
     public static void main(String[] args) {
@@ -28,7 +27,14 @@ public class StartClient {
         }
         RemoteHelloService remoteHelloService = MethodProxyRepository.getProxy(RemoteHelloService.class);
         System.out.println("get remoteHelloService");
-        MockResp result = remoteHelloService.obj();
-        System.out.println("result: " + result + ",time is " + System.currentTimeMillis());
+        while (true){
+            MockResp result = remoteHelloService.obj();
+            System.out.println("result: " + result + ",time is " + System.currentTimeMillis());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

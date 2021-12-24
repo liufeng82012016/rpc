@@ -3,6 +3,9 @@ package com.my.liufeng.rpc.annotation.selector;
 import com.my.liufeng.rpc.annotation.MethodStub;
 import com.my.liufeng.rpc.utils.CollectionUtil;
 
+/**
+ * 扫描使用了MethodStub注解的接口
+ */
 public class MethodStubSelector implements ClassSelector {
     @Override
     public boolean select(Class<?> clazz) {

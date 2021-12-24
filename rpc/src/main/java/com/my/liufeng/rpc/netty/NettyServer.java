@@ -9,6 +9,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 /**
  * @Author liufeng
@@ -16,10 +18,20 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  * @since 2021/5/27 19:49
  */
 public class NettyServer {
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(NettyServer.class);
 
+    /**
+     * 处理业务逻辑的线程数
+     */
     private int workers;
+    /**
+     * 处理socket连接的线程数
+     */
     private int bosses;
-    private int port;
+    /**
+     * 绑定端口
+     */
+    private final int port;
 
     public NettyServer(int port) {
         this.port = port;
@@ -53,13 +65,13 @@ public class NettyServer {
                         }
                     });
             ChannelFuture bindFuture = serverBootstrap.bind(port).sync();
-            System.out.println("open server " + port);
+            logger.info("open server ,port :{} ", port);
             bindFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
-        System.out.println(" server init end");
+        logger.info(" server init end,port:{}", port);
     }
 
 

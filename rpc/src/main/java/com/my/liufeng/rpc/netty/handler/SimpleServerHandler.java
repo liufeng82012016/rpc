@@ -45,7 +45,7 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
             rpcResponse.setMsg(e.getMessage());
             rpcResponse.setCode(1);
         } finally {
-            // todo 这里是异步发送，如果没有对结果进行处理，
+            // todo 这里是异步发送，如果没有对结果进行处理，可能会丢失
             ctx.channel().writeAndFlush(rpcResponse);
         }
     }

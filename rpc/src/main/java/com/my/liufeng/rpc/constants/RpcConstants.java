@@ -6,7 +6,7 @@ public interface RpcConstants {
     /**
      * 消息分隔符
      */
-    byte[] MAGIC_NUMBER = "coffeeBaby_magic".getBytes(StandardCharsets.UTF_8);
+    byte[] SEPARATOR = "&;".getBytes(StandardCharsets.UTF_8);
     /**
      * 消息最大长度
      */
@@ -22,11 +22,9 @@ public interface RpcConstants {
     /**
      * 消息 魔数 用byte[] 标识，占用16byte -- 准备改成分隔符
      */
-    int MSG_MAGIC_NUMBER = MAGIC_NUMBER.length;
+    int MSG_MAGIC_NUMBER = SEPARATOR.length;
     /**
      * 消息，除了消息体，其他字段所占用的长度
      */
-    int MSG_EXTRA_LENGTH = MSG_BODY_LENGTH + MSG_BODY_TYPE + MSG_MAGIC_NUMBER;
-
-
+    int MSG_EXTRA_LENGTH = MSG_BODY_LENGTH + MSG_BODY_TYPE + MSG_MAGIC_NUMBER * 2;
 }

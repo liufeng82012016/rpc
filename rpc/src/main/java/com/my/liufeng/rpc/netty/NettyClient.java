@@ -15,6 +15,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -24,9 +26,19 @@ import java.util.concurrent.CompletableFuture;
  * @since 2021/5/27 19:48
  */
 public class NettyClient {
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(NettyClient.class);
 
+    /**
+     * 服务器ip
+     */
     private String serverHost;
+    /**
+     * 服务器端口
+     */
     private Integer serverPort;
+    /**
+     * 连接
+     */
     private Channel channel;
 
     public NettyClient() {
@@ -48,7 +60,9 @@ public class NettyClient {
         connect();
     }
 
-
+    /**
+     * 连接服务器
+     */
     private void connect() {
         if (serverHost == null || serverPort == null) {
             throw new RuntimeException(String.format("connect fail. parameter %s:%s", serverHost, serverPort));
@@ -67,11 +81,13 @@ public class NettyClient {
         try {
             ChannelFuture connectFuture = bootstrap.connect(serverHost, serverPort).sync();
             connectFuture.addListener((ChannelFutureListener) channelFuture -> {
-                if (!channelFuture.isSuccess()) {
+                if (channelFuture.isSuccess()) {
+                    channel = connectFuture.channel();
+                    logger.info("connect success.host: {},port:{}");
+                } else {
                     throw new InnerException(serverHost + ":" + serverPort + " connect failed");
                 }
             });
-            channel = connectFuture.channel();
             // 关闭之后无法发送接收消息
 //            channel.closeFuture().sync().addListener(future -> {
 //                if (future.isSuccess()) {
@@ -94,7 +110,7 @@ public class NettyClient {
     }
 
     public CompletableFuture<?> sendMsg(RpcRequest request) {
-        if (!channel.isActive()) {
+        if ( channel == null || !channel.isActive()) {
             // todo 状态判定用哪个？
             connect();
         }
@@ -105,7 +121,7 @@ public class NettyClient {
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if (channelFuture.isSuccess()) {
-                System.out.println("Write successful. mills:  " + System.currentTimeMillis());
+                logger.info("Write successful. mills: {} ", System.currentTimeMillis());
                 AttributeKey<Object> key = AttributeKey.newInstance(request.getRequestId());
                 channel.attr(key).set(responseFuture);
             } else {
@@ -113,7 +129,7 @@ public class NettyClient {
                 if (cause != null) {
                     cause.printStackTrace();
                 }
-                System.out.println("Error writing message to Abaca host");
+                logger.warn("Error writing message to host:{} port:{}", serverHost, serverPort);
                 responseFuture.completeExceptionally(future.cause());
             }
         });

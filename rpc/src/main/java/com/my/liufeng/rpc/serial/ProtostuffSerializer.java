@@ -14,6 +14,11 @@ public class ProtostuffSerializer implements Serializer {
      */
     private static final LinkedBuffer BUFFER = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
 
+    /**
+     * 序列化，将对象转换为byte数组
+     * @param obj obj
+     * @return byte[]
+     */
     @Override
     public byte[] serialize(Object obj) {
         Class<?> clazz = obj.getClass();

@@ -2,6 +2,9 @@ package com.my.liufeng.rpc.annotation.selector;
 
 import com.my.liufeng.rpc.annotation.RpcService;
 
+/**
+ * 扫描使用了RpcService注解的类
+ */
 public class RpcServiceSelector implements ClassSelector {
     @Override
     public boolean select(Class<?> clazz) {

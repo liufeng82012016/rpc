@@ -2,6 +2,9 @@ package com.my.liufeng.rpc.exception;
 
 import com.my.liufeng.rpc.enums.ResultCode;
 
+/**
+ * 业务异常
+ */
 public class OuterException extends RuntimeException {
 
     private String msg;

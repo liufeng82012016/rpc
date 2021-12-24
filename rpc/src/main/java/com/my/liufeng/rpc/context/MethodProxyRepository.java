@@ -1,54 +1,43 @@
 package com.my.liufeng.rpc.context;
 
-import com.my.liufeng.rpc.annotation.MethodStub;
-import com.my.liufeng.rpc.utils.ClassScanner;
 import com.my.liufeng.rpc.annotation.selector.MethodStubSelector;
-import com.my.liufeng.rpc.model.RpcRequest;
+import com.my.liufeng.rpc.proxy.RpcInvoker;
+import com.my.liufeng.rpc.utils.ClassScanner;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 方法注册中心 -- 动态代理远程调用方法
  */
 public class MethodProxyRepository {
-
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(MethodProxyRepository.class);
+    /**
+     * 代理类map
+     * class -- proxyInstance
+     */
     private static Map<Class<?>, Object> proxyInstanceMap = null;
 
+    /**
+     * 扫描远程服务，生成对应的代理类
+     *
+     * @param packages 包名
+     */
     public static synchronized void scan(String[] packages) {
         Set<Class<?>> classes = ClassScanner.scan(packages, new MethodStubSelector());
         if (classes.isEmpty()) {
+            logger.info("service with annotation @MethodStub is empty");
             return;
         }
         proxyInstanceMap = new HashMap<>();
+        // 扫描所有的远程服务，创建代理类，加入到map
         for (Class<?> clazz : classes) {
-            MethodStub methodStub = clazz.getAnnotation(MethodStub.class);
-            if (methodStub == null) {
-                return;
-            }
-            Method[] declaredMethods = clazz.getDeclaredMethods();
-            Set<Method> methods = Arrays.stream(declaredMethods).collect(Collectors.toSet());
-            Object proxy = Proxy.newProxyInstance(ClassScanner.getClassLoader(), new Class[]{clazz}, new InvocationHandler() {
-                @Override
-                public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                    if (!methods.contains(method)) {
-                        //  判断是接口声明的方法，还是Object附带的方法 -- 如果是object声明的方法，忽略，不做代理
-                        return method.invoke(this, args);
-                    }
-                    RpcRequest rpcRequest = new RpcRequest();
-                    // todo 生成requestId
-                    rpcRequest.setRequestId(UUID.randomUUID().toString());
-                    rpcRequest.setMethodName(method.getName());
-                    rpcRequest.setParameterTypes(method.getParameterTypes());
-                    rpcRequest.setParams(args);
-                    rpcRequest.setServiceClass(methodStub.className());
-                    System.out.println(String.format("%s %s invoke", clazz.getName(), method.getName()));
-                    return SocketContainer.sendMsg(rpcRequest, methodStub);
-                }
-            });
+            Object proxy = Proxy.newProxyInstance(ClassScanner.getClassLoader(), new Class[]{clazz},
+                    new RpcInvoker(clazz));
             proxyInstanceMap.put(clazz, proxy);
         }
     }
@@ -64,7 +53,5 @@ public class MethodProxyRepository {
         return (T) proxyInstanceMap.get(clazz);
     }
 
-    public static Map<Class<?>, Object> getInstances() {
-        return proxyInstanceMap;
-    }
+
 }
