@@ -31,18 +31,27 @@ public class NettyServer {
     /**
      * 绑定端口
      */
-    private final int port;
+    private int port;
+
+    private ChannelInitializer<SocketChannel> channelInitializer;
+
 
     public NettyServer(int port) {
         this.port = port;
-        try {
-            init();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
-    private void init() throws Exception {
+    public void start() throws Exception {
+        if (channelInitializer == null) {
+            channelInitializer = new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel ch) throws Exception {
+                    // todo
+                    ch.pipeline().addLast(new CustomDecoder());
+                    ch.pipeline().addLast(new CustomEncoder());
+                    ch.pipeline().addLast(new SimpleServerHandler());
+                }
+            };
+        }
         if (workers == 0) {
             workers = Runtime.getRuntime().availableProcessors();
         }
@@ -55,15 +64,7 @@ public class NettyServer {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            // todo
-                            ch.pipeline().addLast(new CustomDecoder());
-                            ch.pipeline().addLast(new CustomEncoder());
-                            ch.pipeline().addLast(new SimpleServerHandler());
-                        }
-                    });
+                    .childHandler(channelInitializer);
             ChannelFuture bindFuture = serverBootstrap.bind(port).sync();
             logger.info("open server ,port :{} ", port);
             bindFuture.channel().closeFuture().sync();
@@ -74,5 +75,35 @@ public class NettyServer {
         logger.info(" server init end,port:{}", port);
     }
 
+    public static InternalLogger getLogger() {
+        return logger;
+    }
 
+    public static void setLogger(InternalLogger logger) {
+        NettyServer.logger = logger;
+    }
+
+    public int getWorkers() {
+        return workers;
+    }
+
+    public void setWorkers(int workers) {
+        this.workers = workers;
+    }
+
+    public int getBosses() {
+        return bosses;
+    }
+
+    public void setBosses(int bosses) {
+        this.bosses = bosses;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 }

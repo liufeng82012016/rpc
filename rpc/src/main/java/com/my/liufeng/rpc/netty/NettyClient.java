@@ -1,10 +1,10 @@
 package com.my.liufeng.rpc.netty;
 
 import com.my.liufeng.rpc.exception.InnerException;
+import com.my.liufeng.rpc.model.RpcRequest;
 import com.my.liufeng.rpc.netty.codec.CustomDecoder;
 import com.my.liufeng.rpc.netty.codec.CustomEncoder;
 import com.my.liufeng.rpc.netty.handler.SimpleClientHandler;
-import com.my.liufeng.rpc.model.RpcRequest;
 import com.my.liufeng.rpc.utils.IpUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -41,6 +41,8 @@ public class NettyClient {
      */
     private Channel channel;
 
+    private ChannelInitializer<SocketChannel> channelInitializer;
+
     public NettyClient() {
         // 不建立连接，等待请求打过来，走注册中心获取端口和ip
     }
@@ -49,7 +51,6 @@ public class NettyClient {
         String[] strings = IpUtil.splitAddress(serverAddress);
         this.serverHost = strings[0];
         this.serverPort = Integer.parseInt(strings[1]);
-        connect();
     }
 
 
@@ -57,27 +58,29 @@ public class NettyClient {
         this.serverPort = serverPort;
         this.serverHost = serverHost;
         // 建立服务端连接
-        connect();
     }
 
     /**
      * 连接服务器
      */
-    private void connect() {
+    public void connect() {
         if (serverHost == null || serverPort == null) {
             throw new RuntimeException(String.format("connect fail. parameter %s:%s", serverHost, serverPort));
+        }
+        if (channelInitializer == null) {
+            channelInitializer = new ChannelInitializer<SocketChannel>() {
+                @Override
+                protected void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addLast(new CustomDecoder());
+                    ch.pipeline().addLast(new CustomEncoder());
+                    ch.pipeline().addLast(new SimpleClientHandler());
+                }
+            };
         }
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel ch) throws Exception {
-                        ch.pipeline().addLast(new CustomDecoder());
-                        ch.pipeline().addLast(new CustomEncoder());
-                        ch.pipeline().addLast(new SimpleClientHandler());
-                    }
-                });
+                .handler(this.channelInitializer);
         try {
             ChannelFuture connectFuture = bootstrap.connect(serverHost, serverPort).sync();
             connectFuture.addListener((ChannelFutureListener) channelFuture -> {
@@ -110,14 +113,24 @@ public class NettyClient {
     }
 
     public CompletableFuture<?> sendMsg(RpcRequest request) {
-        if ( channel == null || !channel.isActive()) {
+        int retryTimes = 0;
+        while (channel == null || !channel.isActive()) {
             // todo 状态判定用哪个？
             connect();
+            retryTimes++;
+            try {
+                retryTimes++;
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                //
+            }
+            if (retryTimes > 3) {
+                break;
+            }
         }
         // 序列化不需要自己做，netty有附带
         ChannelFuture channelFuture = channel.writeAndFlush(request);
         CompletableFuture<?> responseFuture = new CompletableFuture<>();
-        System.out.println("Write begin. mills:  " + System.currentTimeMillis());
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if (channelFuture.isSuccess()) {

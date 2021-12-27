@@ -1,6 +1,6 @@
 package com.my.liufeng.rpc.utils;
 
-import com.my.liufeng.rpc.serial.JsonSerializer;
+import com.my.liufeng.rpc.serial.ProtostuffSerializer;
 import com.my.liufeng.rpc.serial.Serializer;
 
 public class SerialUtil {
@@ -37,7 +37,7 @@ public class SerialUtil {
         if (serializer == null) {
             synchronized (SerialUtil.class) {
                 if (serializer == null) {
-                    serializer = new JsonSerializer();
+                    serializer = new ProtostuffSerializer();
                 }
             }
         }
