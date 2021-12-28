@@ -63,4 +63,14 @@ public class RpcResponse<T> extends RpcMessage implements Response {
     public void setData(T data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "RpcResponse{" +
+                "requestId='" + requestId + '\'' +
+                ", data=" + data +
+                ", code=" + code +
+                ", msg='" + msg + '\'' +
+                '}';
+    }
 }

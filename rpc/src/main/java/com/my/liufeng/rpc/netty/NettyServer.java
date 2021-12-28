@@ -106,4 +106,12 @@ public class NettyServer {
     public void setPort(int port) {
         this.port = port;
     }
+
+    public ChannelInitializer<SocketChannel> getChannelInitializer() {
+        return channelInitializer;
+    }
+
+    public void setChannelInitializer(ChannelInitializer<SocketChannel> channelInitializer) {
+        this.channelInitializer = channelInitializer;
+    }
 }

@@ -2,6 +2,8 @@ package com.my.liufeng.rpc.model;
 
 import com.my.liufeng.rpc.enums.RpcMessageType;
 
+import java.util.Arrays;
+
 /**
  * @Author liufeng
  * @Description: rpc请求
@@ -96,5 +98,15 @@ public class RpcRequest extends RpcMessage implements Request {
         this.providerName = providerName;
     }
 
-
+    @Override
+    public String toString() {
+        return "RpcRequest{" +
+                "requestId='" + requestId + '\'' +
+                ", providerName='" + providerName + '\'' +
+                ", serviceClass='" + serviceClass + '\'' +
+                ", methodName='" + methodName + '\'' +
+                ", parameterTypes=" + Arrays.toString(parameterTypes) +
+                ", params=" + Arrays.toString(params) +
+                '}';
+    }
 }
