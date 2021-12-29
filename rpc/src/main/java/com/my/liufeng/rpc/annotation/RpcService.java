@@ -15,4 +15,9 @@ public @interface RpcService {
      * 和MethodStub的className想对应。如果前者设置了类的全限定名，这里不需设置；否则需要一一对应
      */
     String className() default "";
+
+    /**
+     * 类似spring mvc controller
+     */
+    String id();
 }

@@ -9,6 +9,8 @@ import com.my.liufeng.rpc.utils.SerialUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
  * 解码器，负责反序列化服务器返回值
  */
 public class CustomDecoder extends ByteToMessageDecoder {
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(CustomDecoder.class);
 
 
     @Override
@@ -67,7 +70,7 @@ public class CustomDecoder extends ByteToMessageDecoder {
         while (in.readableBytes() > 0) {
             byte b = in.readByte();
             if (b != RpcConstants.SEPARATOR[0]) {
-                System.out.println("discard: " + b);
+                logger.warn("discard: {}", +b);
                 //  还没有匹配到分隔符的第一位，丢弃掉
                 continue;
             }

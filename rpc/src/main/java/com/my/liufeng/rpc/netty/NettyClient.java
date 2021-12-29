@@ -91,14 +91,6 @@ public class NettyClient {
                     throw new InnerException(serverHost + ":" + serverPort + " connect failed");
                 }
             });
-            // 关闭之后无法发送接收消息
-//            channel.closeFuture().sync().addListener(future -> {
-//                if (future.isSuccess()) {
-//                    System.out.println("channel close success");
-//                } else {
-//                    System.out.println("channel close fail");
-//                }
-//            });
         } catch (InterruptedException e) {
             throw new RuntimeException(String.format("connect interrupted. parameter %s:%s", serverHost, serverPort));
         }

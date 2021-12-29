@@ -7,6 +7,8 @@ import com.my.liufeng.rpc.model.RpcResponse;
 import com.my.liufeng.rpc.utils.SerialUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -14,9 +16,11 @@ import java.lang.reflect.Method;
  * 服务端handler，解析请求，处理并返回
  */
 public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(SimpleServerHandler.class);
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("server receive msg: " + msg);
+        logger.info("server receive msg:{} ", msg);
         RpcRequest rpcRequest;
         if (msg instanceof RpcRequest) {
             rpcRequest = (RpcRequest) msg;
@@ -50,9 +54,5 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("channel connect");
-    }
 
 }

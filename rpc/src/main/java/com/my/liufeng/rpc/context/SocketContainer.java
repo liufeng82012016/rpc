@@ -2,9 +2,11 @@ package com.my.liufeng.rpc.context;
 
 import com.my.liufeng.rpc.annotation.MethodStub;
 import com.my.liufeng.rpc.exception.OuterException;
+import com.my.liufeng.rpc.model.RpcRequest;
 import com.my.liufeng.rpc.model.RpcResponse;
 import com.my.liufeng.rpc.netty.NettyClient;
-import com.my.liufeng.rpc.model.RpcRequest;
+import io.netty.util.internal.logging.InternalLogger;
+import io.netty.util.internal.logging.InternalLoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.*;
@@ -15,6 +17,9 @@ import java.util.concurrent.*;
  * @since 2021/8/4 19:19
  */
 public class SocketContainer {
+    private static InternalLogger logger = InternalLoggerFactory.getInstance(SocketContainer.class);
+
+
     private static final Map<String, NettyClient> clientMap = new ConcurrentHashMap<>();
 
     public static <T> T sendMsg(RpcRequest rpcRequest, MethodStub methodStub) {
@@ -48,7 +53,7 @@ public class SocketContainer {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
-            System.out.println("Time out. mills:  " + System.currentTimeMillis());
+            logger.info("Time out. mills: {} ", System.currentTimeMillis());
             e.printStackTrace();
         }
         return null;
