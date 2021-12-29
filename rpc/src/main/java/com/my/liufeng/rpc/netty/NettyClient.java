@@ -41,7 +41,7 @@ public class NettyClient {
      */
     private Channel channel;
 
-    private ChannelInitializer<SocketChannel> channelInitializer;
+    private static ChannelInitializer<SocketChannel> channelInitializer;
 
     public NettyClient() {
         // 不建立连接，等待请求打过来，走注册中心获取端口和ip
@@ -80,7 +80,7 @@ public class NettyClient {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
-                .handler(this.channelInitializer);
+                .handler(channelInitializer);
         try {
             ChannelFuture connectFuture = bootstrap.connect(serverHost, serverPort).sync();
             connectFuture.addListener((ChannelFutureListener) channelFuture -> {
@@ -147,5 +147,9 @@ public class NettyClient {
             }
         });
         return responseFuture;
+    }
+
+    public static void setChannelInitializer(ChannelInitializer<SocketChannel> channelInitializer) {
+        NettyClient.channelInitializer = channelInitializer;
     }
 }
