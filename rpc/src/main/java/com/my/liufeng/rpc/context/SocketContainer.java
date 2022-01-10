@@ -39,6 +39,8 @@ public class SocketContainer {
         }
         // 发送请求
         // todo 一切统计相关的内容在这儿做
+        long startTime = System.currentTimeMillis();
+
         CompletableFuture future = netClient.sendMsg(rpcRequest);
         try {
             // todo 返回值处理/code判断
@@ -53,7 +55,7 @@ public class SocketContainer {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         } catch (TimeoutException e) {
-            logger.info("Time out. mills: {} ", System.currentTimeMillis());
+            logger.info("Time out. mills: {} ", System.currentTimeMillis() - startTime);
             e.printStackTrace();
         }
         return null;

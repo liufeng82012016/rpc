@@ -126,7 +126,6 @@ public class NettyClient {
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if (channelFuture.isSuccess()) {
-                logger.info("Write successful. mills: {} ", System.currentTimeMillis());
                 AttributeKey<Object> key = AttributeKey.newInstance(request.getRequestId());
                 channel.attr(key).set(responseFuture);
             } else {
@@ -134,7 +133,6 @@ public class NettyClient {
                 if (cause != null) {
                     cause.printStackTrace();
                 }
-                logger.warn("Error writing message to host:{} port:{}", serverHost, serverPort);
                 responseFuture.completeExceptionally(future.cause());
             }
         });
