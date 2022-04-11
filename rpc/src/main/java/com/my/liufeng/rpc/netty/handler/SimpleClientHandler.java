@@ -23,6 +23,7 @@ public class SimpleClientHandler extends ChannelInboundHandlerAdapter {
             CompletableFuture future = (CompletableFuture) ctx.channel().attr(AttributeKey.valueOf(response.getRequestId())).getAndSet(null);
             future.complete(response);
         } else {
+            // 其他类型，暂时不兼容
         }
     }
 

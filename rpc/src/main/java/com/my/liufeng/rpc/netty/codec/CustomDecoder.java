@@ -66,6 +66,9 @@ public class CustomDecoder extends ByteToMessageDecoder {
         }
     }
 
+    /**
+     * 丢弃无效的字节
+     */
     private void discardReadBytes(ByteBuf in) {
         while (in.readableBytes() > 0) {
             byte b = in.readByte();
