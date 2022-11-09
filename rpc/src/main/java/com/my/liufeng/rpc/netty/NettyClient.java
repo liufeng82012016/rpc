@@ -109,7 +109,6 @@ public class NettyClient {
         while (channel == null || !channel.isActive()) {
             // todo 状态判定用哪个？
             connect();
-            retryTimes++;
             try {
                 retryTimes++;
                 Thread.sleep(10);

@@ -1,7 +1,9 @@
 package com.my.liufeng.rpc.netty.handler;
 
 import com.my.liufeng.rpc.context.ProviderRepository;
+import com.my.liufeng.rpc.enums.RpcMessageType;
 import com.my.liufeng.rpc.exception.InnerException;
+import com.my.liufeng.rpc.model.RpcHeartMsg;
 import com.my.liufeng.rpc.model.RpcRequest;
 import com.my.liufeng.rpc.model.RpcResponse;
 import com.my.liufeng.rpc.utils.SerialUtil;
@@ -26,6 +28,13 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
             rpcRequest = (RpcRequest) msg;
         } else {
             rpcRequest = SerialUtil.deserialize(String.valueOf(msg), RpcRequest.class);
+        }
+        // 标记channel活跃
+        ctx.fireChannelActive();
+        if (rpcRequest.type == RpcMessageType.TYPE_PING.getType()) {
+            // 心跳处理
+            ctx.channel().writeAndFlush(SerialUtil.serialize(RpcHeartMsg.PONG));
+            return;
         }
         // 初始化相应值
         RpcResponse rpcResponse = new RpcResponse();

@@ -24,6 +24,7 @@ public class RpcResponse<T> extends RpcMessage implements Response {
         this.type = RpcMessageType.TYPE_RESPONSE.getType();
     }
 
+    @Override
     public byte getType() {
         return type;
     }

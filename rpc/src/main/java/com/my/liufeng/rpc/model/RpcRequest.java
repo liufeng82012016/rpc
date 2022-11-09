@@ -40,6 +40,7 @@ public class RpcRequest extends RpcMessage implements Request {
         type = RpcMessageType.TYPE_REQUEST.getType();
     }
 
+    @Override
     public byte getType() {
         return type;
     }
