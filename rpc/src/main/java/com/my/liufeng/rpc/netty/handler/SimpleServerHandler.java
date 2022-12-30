@@ -9,6 +9,8 @@ import com.my.liufeng.rpc.model.RpcResponse;
 import com.my.liufeng.rpc.utils.SerialUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.internal.logging.InternalLogger;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 
@@ -63,5 +65,27 @@ public class SimpleServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("connect to client:{}", ctx.channel().remoteAddress());
+    }
 
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("disconnect to client:{}", ctx.channel().remoteAddress());
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.ALL_IDLE) {
+                // 指定时间没有收到数据包，断开连接
+                ctx.disconnect();
+                logger.info("server 收到reader idle事件，断开连接.client address:{}", ctx.channel().remoteAddress());
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
+    }
 }

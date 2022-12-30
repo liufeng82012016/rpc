@@ -1,5 +1,6 @@
 package com.my.liufeng.rpc.netty;
 
+import com.my.liufeng.rpc.context.IdleHandlerFactory;
 import com.my.liufeng.rpc.exception.InnerException;
 import com.my.liufeng.rpc.model.RpcRequest;
 import com.my.liufeng.rpc.netty.codec.CustomDecoder;
@@ -71,6 +72,7 @@ public class NettyClient {
             channelInitializer = new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
+                    ch.pipeline().addLast(IdleHandlerFactory.getIdleHandler());
                     ch.pipeline().addLast(new CustomDecoder());
                     ch.pipeline().addLast(new CustomEncoder());
                     ch.pipeline().addLast(new SimpleClientHandler());

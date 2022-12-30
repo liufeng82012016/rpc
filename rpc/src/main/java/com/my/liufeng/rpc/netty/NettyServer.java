@@ -1,5 +1,6 @@
 package com.my.liufeng.rpc.netty;
 
+import com.my.liufeng.rpc.context.IdleHandlerFactory;
 import com.my.liufeng.rpc.netty.codec.CustomDecoder;
 import com.my.liufeng.rpc.netty.codec.CustomEncoder;
 import com.my.liufeng.rpc.netty.handler.SimpleServerHandler;
@@ -46,6 +47,7 @@ public class NettyServer {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {
                     // todo
+                    ch.pipeline().addLast(IdleHandlerFactory.getIdleHandler());
                     ch.pipeline().addLast(new CustomDecoder());
                     ch.pipeline().addLast(new CustomEncoder());
                     ch.pipeline().addLast(new SimpleServerHandler());
